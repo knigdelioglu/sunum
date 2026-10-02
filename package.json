@@ -1,0 +1,12 @@
+{
+  "name": "sunum",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate:decks": "node scripts/validate-decks.mjs"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1"
+  }
+}
