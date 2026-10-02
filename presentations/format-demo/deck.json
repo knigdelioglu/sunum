@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "id": "format-demo",
+  "title": "Sunum Formatı Demo",
+  "description": "Desteklenen slayt tiplerini ve veri sözleşmesini örnekleyen deck.",
+  "category": "demo",
+  "tags": ["örnek", "format"],
+  "theme": "default",
+  "slides": [
+    {
+      "id": "s01",
+      "type": "title",
+      "eyebrow": "Sunum",
+      "title": "Web Sunumu Formatı",
+      "subtitle": "İçerik AI tarafından, yerleşim renderer tarafından yönetilir."
+    },
+    {
+      "id": "s02",
+      "type": "section",
+      "title": "Temel Slaytlar",
+      "subtitle": "Metin ve anlatım yapıları"
+    },
+    {
+      "id": "s03",
+      "type": "text",
+      "title": "Tek temel düşünce",
+      "body": "Bir slayt mümkün olduğunca tek bir ana fikri taşımalıdır.",
+      "highlight": "Uzun metni küçültmek yerine yeni slayda böl."
+    },
+    {
+      "id": "s04",
+      "type": "bullet",
+      "title": "Sunum ilkeleri",
+      "items": [
+        "Kısa ve projeksiyonda okunabilir metin",
+        "Tutarlı görsel hiyerarşi",
+        "İçerik ile tasarımın ayrılması"
+      ],
+      "reveal": ["items"]
+    },
+    {
+      "id": "s05",
+      "type": "question",
+      "title": "Düşünelim",
+      "question": "Neden yapay zekâ doğrudan CSS üretmek yerine deck.json üretmeli?",
+      "hint": "Tutarlılık ve yeniden kullanılabilirliği düşünün.",
+      "answer": "Çünkü yerleşim kuralları renderer'da sabit kalır; AI yalnızca içeriğe odaklanır.",
+      "evidence": "Aynı slayt tipi farklı sunumlarda aynı tasarım sistemiyle render edilir.",
+      "reveal": ["hint", "answer", "evidence"],
+      "speakerNotes": "Cevabı açmadan önce kısa bir görüş alın."
+    },
+    {
+      "id": "s06",
+      "type": "question_answer",
+      "question": "Deck'in ana kaynak formatı nedir?",
+      "answer": "JSON.",
+      "evidence": "Her sunum presentations/<id>/deck.json konumunda tutulur.",
+      "reveal": ["answer", "evidence"]
+    },
+    {
+      "id": "s07",
+      "type": "quote",
+      "title": "Tasarım ilkesi",
+      "quote": "İçerik değişir, sunum motoru sabit kalır.",
+      "attribution": "Sunum mimarisi"
+    },
+    {
+      "id": "s08",
+      "type": "definitions",
+      "title": "Temel kavramlar",
+      "groupSize": 3,
+      "items": [
+        {
+          "term": "Deck",
+          "definition": "Bir sunumun yapılandırılmış içerik verisi."
+        },
+        {
+          "term": "Renderer",
+          "definition": "Deck verisini görsel slaytlara dönüştüren katman."
+        },
+        {
+          "term": "Reveal",
+          "definition": "Slayt içeriğinin tıklamalarla aşamalı gösterimi."
+        },
+        {
+          "term": "Speaker notes",
+          "definition": "Projeksiyonda görünmeyen sunucu notları."
+        },
+        {
+          "term": "Schema",
+          "definition": "Deck'in izin verilen yapısını tanımlayan sözleşme."
+        },
+        {
+          "term": "Theme",
+          "definition": "Renderer'ın kullandığı tasarım tokenları bütünü."
+        }
+      ],
+      "reveal": ["terms", "definitions"]
+    },
+    {
+      "id": "s09",
+      "type": "comparison",
+      "title": "PPTX ve web yaklaşımı",
+      "columns": [
+        {
+          "title": "Doğrudan PPTX",
+          "items": [
+            "Yerleşim üreticiye bağlı",
+            "Taşma riski yüksek",
+            "Animasyon üretimi zor"
+          ]
+        },
+        {
+          "title": "Deck + Renderer",
+          "items": [
+            "Yerleşim merkezi",
+            "Kurallar doğrulanabilir",
+            "Reveal sistematik"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s10",
+      "type": "table",
+      "title": "Slayt tipi seçimi",
+      "headers": ["İhtiyaç", "Tip"],
+      "rows": [
+        ["Kavram ve anlam", "definitions"],
+        ["İki yapıyı kıyaslama", "comparison"],
+        ["Satır-sütun verisi", "table"],
+        ["Kronolojik akış", "timeline"]
+      ],
+      "reveal": ["rows"]
+    },
+    {
+      "id": "s11",
+      "type": "timeline",
+      "title": "Sunum üretim akışı",
+      "items": [
+        {
+          "label": "1",
+          "title": "Kaynak",
+          "description": "AI'ya kaynak ve amaç verilir."
+        },
+        {
+          "label": "2",
+          "title": "Deck",
+          "description": "AI geçerli deck.json üretir."
+        },
+        {
+          "label": "3",
+          "title": "Doğrulama",
+          "description": "Şema ve semantik kontroller çalışır."
+        },
+        {
+          "label": "4",
+          "title": "Sunum",
+          "description": "Renderer web sunumunu oluşturur."
+        }
+      ],
+      "reveal": ["items"]
+    },
+    {
+      "id": "s12",
+      "type": "image_text",
+      "title": "Görsel + metin",
+      "body": "Görsel dosyaları sunuma ait klasörde veya public varlıklarında tutulabilir.",
+      "image": {
+        "src": "/images/example-placeholder.svg",
+        "alt": "Örnek görsel yer tutucusu",
+        "caption": "Gerçek sunumlarda açıklayıcı alt metin zorunludur."
+      },
+      "imagePosition": "right"
+    },
+    {
+      "id": "s13",
+      "type": "two_column",
+      "title": "İçerik ve renderer",
+      "left": {
+        "title": "Deck",
+        "items": [
+          "Ne anlatılacak?",
+          "Hangi sırayla?",
+          "Neler aşamalı açılacak?"
+        ]
+      },
+      "right": {
+        "title": "Renderer",
+        "items": [
+          "Nasıl yerleşecek?",
+          "Hangi tipografi kullanılacak?",
+          "Nasıl ölçeklenecek?"
+        ]
+      }
+    },
+    {
+      "id": "s14",
+      "type": "process",
+      "title": "AI ile yeni sunum",
+      "steps": [
+        {
+          "title": "Kaynağı incele",
+          "description": "Bilgi sınırlarını belirle."
+        },
+        {
+          "title": "Akışı tasarla",
+          "description": "Slayt dramaturjisini oluştur."
+        },
+        {
+          "title": "JSON üret",
+          "description": "Yalnız desteklenen tipleri kullan."
+        },
+        {
+          "title": "Doğrula",
+          "description": "npm run validate:decks çalıştır."
+        }
+      ],
+      "reveal": ["steps"]
+    },
+    {
+      "id": "s15",
+      "type": "summary",
+      "title": "Özet",
+      "items": [
+        "AI içerik üretir.",
+        "Schema biçimi sınırlar.",
+        "Renderer tasarımı yönetir.",
+        "Netlify aynı motorla tüm sunumları yayınlar."
+      ],
+      "closing": "Yeni sunum = yeni deck.json"
+    }
+  ]
+}
