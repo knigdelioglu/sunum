@@ -1,0 +1,517 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sunum.local/schema/deck.schema.json",
+  "title": "Sunum Deck",
+  "description": "Sunum projesi için yapay zekâ tarafından üretilecek sunum içeriği sözleşmesi.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "title", "slides"],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "$ref": "#/$defs/id"
+    },
+    "title": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/nonEmptyString" },
+      "uniqueItems": true
+    },
+    "theme": {
+      "type": "string",
+      "default": "default"
+    },
+    "slides": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/titleSlide" },
+          { "$ref": "#/$defs/sectionSlide" },
+          { "$ref": "#/$defs/textSlide" },
+          { "$ref": "#/$defs/bulletSlide" },
+          { "$ref": "#/$defs/questionSlide" },
+          { "$ref": "#/$defs/questionAnswerSlide" },
+          { "$ref": "#/$defs/quoteSlide" },
+          { "$ref": "#/$defs/definitionsSlide" },
+          { "$ref": "#/$defs/comparisonSlide" },
+          { "$ref": "#/$defs/tableSlide" },
+          { "$ref": "#/$defs/timelineSlide" },
+          { "$ref": "#/$defs/imageTextSlide" },
+          { "$ref": "#/$defs/twoColumnSlide" },
+          { "$ref": "#/$defs/processSlide" },
+          { "$ref": "#/$defs/summarySlide" }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stringArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "label": { "$ref": "#/$defs/nonEmptyString" },
+        "url": { "type": "string" },
+        "page": { "type": ["string", "number"] },
+        "note": { "type": "string" }
+      },
+      "anyOf": [
+        { "required": ["label"] },
+        { "required": ["url"] },
+        { "required": ["page"] },
+        { "required": ["note"] }
+      ]
+    },
+    "baseProperties": {
+      "type": "object",
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "speakerNotes": { "type": "string" },
+        "source": { "$ref": "#/$defs/source" }
+      },
+      "required": ["id"]
+    },
+
+    "titleSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "title" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "subtitle": { "type": "string" },
+            "eyebrow": { "type": "string" },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "sectionSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "section" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "subtitle": { "type": "string" },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "textSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "text" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "body": { "$ref": "#/$defs/nonEmptyString" },
+            "highlight": { "type": "string" },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title", "body"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "bulletSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "bullet" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "items": { "$ref": "#/$defs/stringArray" },
+            "reveal": {
+              "type": "array",
+              "items": { "const": "items" },
+              "maxItems": 1,
+              "uniqueItems": true
+            },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title", "items"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "questionSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "question" },
+            "title": { "type": "string" },
+            "question": { "$ref": "#/$defs/nonEmptyString" },
+            "hint": { "type": "string" },
+            "answer": { "type": "string" },
+            "evidence": { "type": "string" },
+            "reveal": {
+              "type": "array",
+              "items": { "enum": ["hint", "answer", "evidence"] },
+              "uniqueItems": true
+            },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "question"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "questionAnswerSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "question_answer" },
+            "title": { "type": "string" },
+            "question": { "$ref": "#/$defs/nonEmptyString" },
+            "answer": { "$ref": "#/$defs/nonEmptyString" },
+            "evidence": { "type": "string" },
+            "reveal": {
+              "type": "array",
+              "items": { "enum": ["answer", "evidence"] },
+              "uniqueItems": true
+            },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "question", "answer"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "quoteSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "quote" },
+            "title": { "type": "string" },
+            "quote": { "$ref": "#/$defs/nonEmptyString" },
+            "attribution": { "type": "string" },
+            "context": { "type": "string" },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "quote"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "definitionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["term", "definition"],
+      "properties": {
+        "term": { "$ref": "#/$defs/nonEmptyString" },
+        "definition": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "definitionsSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "definitions" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/definitionItem" }
+            },
+            "groupSize": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 3
+            },
+            "reveal": {
+              "type": "array",
+              "items": { "enum": ["terms", "definitions"] },
+              "uniqueItems": true
+            },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title", "items"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "comparisonColumn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "items"],
+      "properties": {
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "items": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "comparisonSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "comparison" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "columns": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 3,
+              "items": { "$ref": "#/$defs/comparisonColumn" }
+            },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title", "columns"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "tableSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "table" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "headers": { "$ref": "#/$defs/stringArray" },
+            "rows": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string" }
+              }
+            },
+            "reveal": {
+              "type": "array",
+              "items": { "const": "rows" },
+              "maxItems": 1,
+              "uniqueItems": true
+            },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title", "headers", "rows"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "timelineItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "title"],
+      "properties": {
+        "label": { "$ref": "#/$defs/nonEmptyString" },
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "description": { "type": "string" }
+      }
+    },
+    "timelineSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "timeline" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "items": {
+              "type": "array",
+              "minItems": 2,
+              "items": { "$ref": "#/$defs/timelineItem" }
+            },
+            "reveal": {
+              "type": "array",
+              "items": { "const": "items" },
+              "maxItems": 1,
+              "uniqueItems": true
+            },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title", "items"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["src", "alt"],
+      "properties": {
+        "src": { "$ref": "#/$defs/nonEmptyString" },
+        "alt": { "$ref": "#/$defs/nonEmptyString" },
+        "caption": { "type": "string" }
+      }
+    },
+    "imageTextSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "image_text" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "body": { "$ref": "#/$defs/nonEmptyString" },
+            "image": { "$ref": "#/$defs/image" },
+            "imagePosition": { "enum": ["left", "right", "top", "background"] },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title", "body", "image"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "columnContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title"],
+      "properties": {
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "body": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      },
+      "anyOf": [
+        { "required": ["body"] },
+        { "required": ["items"] }
+      ]
+    },
+    "twoColumnSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "two_column" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "left": { "$ref": "#/$defs/columnContent" },
+            "right": { "$ref": "#/$defs/columnContent" },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title", "left", "right"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "processStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title"],
+      "properties": {
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "description": { "type": "string" }
+      }
+    },
+    "processSlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "process" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "steps": {
+              "type": "array",
+              "minItems": 2,
+              "items": { "$ref": "#/$defs/processStep" }
+            },
+            "reveal": {
+              "type": "array",
+              "items": { "const": "steps" },
+              "maxItems": 1,
+              "uniqueItems": true
+            },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title", "steps"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "summarySlide": {
+      "allOf": [
+        { "$ref": "#/$defs/baseProperties" },
+        {
+          "type": "object",
+          "properties": {
+            "id": { "$ref": "#/$defs/id" },
+            "type": { "const": "summary" },
+            "title": { "$ref": "#/$defs/nonEmptyString" },
+            "items": { "$ref": "#/$defs/stringArray" },
+            "closing": { "type": "string" },
+            "speakerNotes": { "type": "string" },
+            "source": { "$ref": "#/$defs/source" }
+          },
+          "required": ["type", "title", "items"],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}
