@@ -7,7 +7,7 @@ Bu projenin temel yaklaşımı, her sunum için ayrı bir uygulama geliştirmek 
 ```text
 Yapay zekâ / editör
         ↓
-presentation.json
+deck.json
         ↓
 Sunum motoru
         ↓
@@ -53,19 +53,59 @@ Sunum motoru görünüm, tipografi, yerleşim, responsive davranış, klavye kon
 }
 ```
 
-## Hedef yapı
+## Canonical deck formatı
+
+Sunum içeriğinin tek sözleşmesi [schema/deck.schema.json](./schema/deck.schema.json) dosyasıdır.
+
+Her sunum:
+
+```text
+presentations/<sunum-id>/deck.json
+```
+
+konumunda tutulur. Deck içinde `schemaVersion: 1` bulunmalı ve `deck.id` klasör adıyla aynı olmalıdır.
+
+Tüm desteklenen slayt tiplerini gösteren çalışan örnek:
+
+[**presentations/format-demo/deck.json**](./presentations/format-demo/deck.json)
+
+AI'ya yeni sunum hazırlatırken kullanılacak hazır talimat:
+
+[**prompts/CREATE_PRESENTATION.md**](./prompts/CREATE_PRESENTATION.md)
+
+Kodlama ajanları için repo kuralları:
+
+[**AGENTS.md**](./AGENTS.md)
+
+## Repo yapısı
 
 ```text
 sunum/
-├── src/                  # Sunum motoru
-├── presentations/        # Sunum içerikleri
-│   ├── osmancik/
-│   │   └── deck.json
-│   └── ...
+├── schema/
+│   └── deck.schema.json          # Canonical veri sözleşmesi
+├── presentations/
+│   └── format-demo/
+│       └── deck.json             # Referans deck
+├── prompts/
+│   └── CREATE_PRESENTATION.md    # AI sunum üretim promptu
+├── scripts/
+│   └── validate-decks.mjs        # Schema + semantik doğrulama
 ├── public/
+│   └── images/
+├── src/                          # Sunum motoru (sonraki aşama)
+├── AGENTS.md
 ├── SCOPE.md
 └── README.md
 ```
+
+Deck'leri yerelde doğrulamak için:
+
+```bash
+npm install
+npm run validate:decks
+```
+
+Aynı doğrulama GitHub Actions üzerinde push ve pull request'lerde otomatik çalışır.
 
 Planlanan URL yapısı:
 
@@ -134,7 +174,9 @@ Bu davranış içerikte deklaratif olarak tanımlanmalı; her sunum için yenide
 
 ## Yapay zekâ ile çalışma
 
-Yeni bir sunum hazırlanırken tercih edilen akış:
+Yeni bir sunum için [prompts/CREATE_PRESENTATION.md](./prompts/CREATE_PRESENTATION.md) doğrudan kullanılabilir.
+
+Tercih edilen akış:
 
 1. Kaynaklar ve amaç yapay zekâya verilir.
 2. Yapay zekâ sunum dramaturjisini ve slayt akışını oluşturur.
@@ -155,4 +197,6 @@ Hedef, **tek Netlify projesinden tüm sunumları yayınlamaktır**. Her sunum i�
 
 ## Durum
 
-Proje başlangıç aşamasındadır. İlk geliştirme kapsamı ve sınırlar için [SCOPE.md](./SCOPE.md) dosyasına bakın.
+Deck veri sözleşmesi, referans sunum, doğrulama scripti, AI üretim promptu ve CI doğrulaması hazırdır. Web renderer henüz geliştirme aşamasına geçmemiştir.
+
+İlk geliştirme kapsamı ve sınırlar için [SCOPE.md](./SCOPE.md) dosyasına bakın.
