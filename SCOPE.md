@@ -50,21 +50,30 @@ Uygulama ise:
 
 Her sunum, mümkün olduğunca koddan bağımsız veri olarak tanımlanır.
 
-Önerilen konum:
+Canonical konum:
 
 ```text
 presentations/<presentation-id>/deck.json
 ```
 
-Sunum verisi en az şu üst seviye alanları desteklemelidir:
+Canonical veri sözleşmesi:
+
+```text
+schema/deck.schema.json
+```
+
+Sunum verisi en az şu üst seviye alanları içermelidir:
 
 ```json
 {
+  "schemaVersion": 1,
   "id": "example",
   "title": "Örnek Sunum",
   "slides": []
 }
 ```
+
+`deck.id` klasör adıyla aynı olmalıdır. Slayt id'leri aynı deck içinde benzersiz olmalıdır. Schema doğrulamasına ek olarak bu kurallar `scripts/validate-decks.mjs` ile kontrol edilir.
 
 İleride opsiyonel olarak:
 
@@ -183,6 +192,8 @@ Yapay zekâdan beklenen:
 - kaynak gerektiren içeriklerde kaynak bilgisini korumak,
 - geçerli şemaya uyan JSON üretmek.
 
+Hazır üretim talimatı `prompts/CREATE_PRESENTATION.md` dosyasındadır. Repo üzerinde çalışan kodlama ajanları ayrıca `AGENTS.md` kurallarına uymalıdır.
+
 Yapay zekâdan varsayılan olarak beklenmeyen:
 
 - serbest CSS yazmak,
@@ -190,17 +201,17 @@ Yapay zekâdan varsayılan olarak beklenmeyen:
 - her sunuma yeni React bileşeni yazmak,
 - tasarım sistemini sunum bazında değiştirmek.
 
-## 5. Custom slayt politikası
+## 5. Yeni / custom slayt politikası
 
-Standart tiplerle ifade edilemeyen özel görseller için `custom` tipi eklenebilir.
+V1 schema'sında `custom` tipi **yoktur**. İçerik üreten bir AI mevcut schema dışında yeni bir `type` uydurmamalıdır.
 
-Ancak:
+Mevcut tiplerle ifade edilemeyen gerçek bir ihtiyaç ortaya çıkarsa:
 
-1. Önce mevcut standart tiplerle çözüm aranır.
-2. Gerçekten yeniden kullanılabilir bir ihtiyaçsa yeni standart tip oluşturulur.
-3. Tek seferlik ama gerekli bir görselse `custom` kullanılabilir.
-4. Custom bileşenler sunum verisinden keyfi kod çalıştırmamalıdır.
-5. Custom kullanımının toplam sunumların küçük bir bölümü olması hedeflenir.
+1. Önce mevcut standart tiplerle doğru biçimde çözülüp çözülemediği değerlendirilir.
+2. İhtiyaç tekrar kullanılabilir ise yeni standart slayt tipi tasarlanabilir.
+3. Yeni tip eklemek yalnız deck değişikliği değildir; ürün sözleşmesi değişikliğidir.
+4. Schema, referans deck, validator, renderer ve ilgili testler birlikte güncellenmelidir.
+5. Tek bir sunumu geçerli kılmak için schema gevşetilmemelidir.
 
 ## 6. Taşma ve kalite kontrolleri
 
@@ -259,7 +270,8 @@ Bu özellik temel renderer çalıştıktan sonra uygulanabilir.
 - React
 - TypeScript
 - Vite
-- JSON Schema veya eşdeğer runtime doğrulama
+- JSON Schema Draft 2020-12
+- Ajv tabanlı schema + semantik deck doğrulaması
 - Netlify
 
 Gerekirse uygulama büyüdüğünde ek kütüphaneler değerlendirilebilir; ancak sunum motorunun bağımsız ve hafif kalması önceliklidir.
@@ -297,6 +309,10 @@ PPTX dışa aktarma ileride eklenirse web sunumunun birebir kopyası olmak zorun
 
 İlk çalışan sürüm tamamlanmış sayılmak için:
 
+- [x] Canonical `deck.schema.json` tanımlı.
+- [x] Tüm desteklenen slayt tiplerini içeren referans deck var.
+- [x] Deck validator mevcut.
+- [x] Push/PR sırasında GitHub Actions deck doğrulaması çalıştırıyor.
 - [ ] React + TypeScript uygulaması açılıyor.
 - [ ] En az iki örnek sunum JSON'dan yüklenebiliyor.
 - [ ] `/p/:id` rotası doğrudan çalışıyor.
