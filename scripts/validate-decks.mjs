@@ -17,7 +17,7 @@ const ajv = new Ajv2020({
   allErrors: true,
   strict: false
 });
-const validate = ajv.compile(schema);
+const validateSchema = ajv.compile(schema);
 
 function findDecks(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -31,7 +31,7 @@ function findDecks(dir) {
       result.push(fullPath);
     }
   }
-  return result;
+  return result.sort();
 }
 
 function pointerToPath(pointer = "") {
@@ -41,6 +41,53 @@ function pointerToPath(pointer = "") {
     .filter(Boolean)
     .map((segment) => segment.replaceAll("~1", "/").replaceAll("~0", "~"))
     .join(".");
+}
+
+function semanticErrors(deck, deckPath) {
+  const errors = [];
+
+  const folderId = path.basename(path.dirname(deckPath));
+  if (deck.id !== folderId) {
+    errors.push(
+      `deck.id ("${deck.id}") klasör adıyla ("${folderId}") aynı olmalı.`
+    );
+  }
+
+  const seenIds = new Set();
+  for (const slide of deck.slides) {
+    if (seenIds.has(slide.id)) {
+      errors.push(`Tekrarlanan slide id: ${slide.id}`);
+    }
+    seenIds.add(slide.id);
+
+    if (slide.type === "question" || slide.type === "question_answer") {
+      for (const target of slide.reveal ?? []) {
+        if (!(target in slide) || slide[target] === "") {
+          errors.push(
+            `${slide.id}: reveal "${target}" alanını açmak istiyor ancak alan yok veya boş.`
+          );
+        }
+      }
+    }
+
+    if (slide.type === "table") {
+      slide.rows.forEach((row, rowIndex) => {
+        if (row.length !== slide.headers.length) {
+          errors.push(
+            `${slide.id}: table satır ${rowIndex + 1} hücre sayısı (${row.length}) header sayısıyla (${slide.headers.length}) aynı olmalı.`
+          );
+        }
+      });
+    }
+
+    if (slide.type === "definitions" && slide.groupSize > slide.items.length) {
+      errors.push(
+        `${slide.id}: groupSize (${slide.groupSize}) kavram sayısından (${slide.items.length}) büyük olmamalı.`
+      );
+    }
+  }
+
+  return errors;
 }
 
 const deckPaths = findDecks(presentationsDir);
@@ -61,44 +108,30 @@ for (const deckPath of deckPaths) {
   } catch (error) {
     hasError = true;
     console.error(`\n✗ ${relativePath}: geçersiz JSON`);
-    console.error(error.message);
+    console.error(`  - ${error.message}`);
     continue;
   }
 
-  const valid = validate(deck);
+  const valid = validateSchema(deck);
 
   if (!valid) {
     hasError = true;
-    console.error(`\n✗ ${relativePath}`);
+    console.error(`\n✗ ${relativePath}: schema doğrulaması`);
 
-    for (const error of validate.errors ?? []) {
+    for (const error of validateSchema.errors ?? []) {
       const location = pointerToPath(error.instancePath);
       console.error(`  - ${location}: ${error.message}`);
     }
     continue;
   }
 
-  const slideIds = deck.slides.map((slide) => slide.id);
-  const duplicateIds = slideIds.filter(
-    (id, index) => slideIds.indexOf(id) !== index
-  );
-
-  if (duplicateIds.length > 0) {
+  const extraErrors = semanticErrors(deck, deckPath);
+  if (extraErrors.length > 0) {
     hasError = true;
-    console.error(`\n✗ ${relativePath}`);
-    console.error(
-      `  - Tekrarlanan slide id: ${[...new Set(duplicateIds)].join(", ")}`
-    );
-    continue;
-  }
-
-  const folderId = path.basename(path.dirname(deckPath));
-  if (deck.id !== folderId) {
-    hasError = true;
-    console.error(`\n✗ ${relativePath}`);
-    console.error(
-      `  - deck.id ("${deck.id}") klasör adıyla ("${folderId}") aynı olmalı.`
-    );
+    console.error(`\n✗ ${relativePath}: semantik doğrulama`);
+    for (const error of extraErrors) {
+      console.error(`  - ${error}`);
+    }
     continue;
   }
 
