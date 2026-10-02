@@ -1,0 +1,35 @@
+name: Validate decks
+
+on:
+  push:
+    paths:
+      - "presentations/**"
+      - "schema/**"
+      - "scripts/validate-decks.mjs"
+      - "package.json"
+      - ".github/workflows/validate-decks.yml"
+  pull_request:
+    paths:
+      - "presentations/**"
+      - "schema/**"
+      - "scripts/validate-decks.mjs"
+      - "package.json"
+      - ".github/workflows/validate-decks.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install validation dependency
+        run: npm install --no-audit --no-fund
+
+      - name: Validate presentation decks
+        run: npm run validate:decks
